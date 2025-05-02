@@ -9,7 +9,7 @@ class TokenController {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return res.status(401).json("Faça login");
+        return res.status(401).json("login ou senha é invalido");
       }
 
       const user = await User.findOne({ where: { email } });
