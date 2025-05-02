@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
+import e from "express";
 
-import User from "../models/userModel";
+import User from "../models/userModel.js";
 
 class UserController {
   async index(req, res) {
@@ -43,13 +44,13 @@ class UserController {
 
   async store(req, res) {
     try {
-      const { nome, email, password } = req.body;
+      const { nome, email, password, perfil } = req.body;
 
-      if (!nome && !email && !password) {
+      if (!nome && !email && !password && !perfil) {
         return res.status(401).json("Os complete os campos!");
       }
 
-      const user = await User.findOne({ where: email });
+      const user = await User.findOne({ where: { email } });
 
       if (user) {
         return res.status(400).json("Usuario já existe");
@@ -57,9 +58,14 @@ class UserController {
 
       const newPassword = bcrypt.hashSync(password, 10);
 
-      password = newPassword;
+      const newUser = {
+        nome: nome,
+        email: email,
+        password: newPassword,
+        perfil: perfil,
+      };
 
-      const newUser = await User.create(nome, email, password);
+      await User.create(newUser);
 
       return res.json(newUser);
     } catch (e) {
