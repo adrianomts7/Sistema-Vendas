@@ -3,6 +3,8 @@ import express from "express";
 
 dotenv.config();
 
+import user from "./src/routes/user.js";
+
 class App {
   constructor() {
     this.app = express();
@@ -15,7 +17,9 @@ class App {
     this.app.use(express.json());
   }
 
-  routes() {}
+  routes() {
+    this.app.use("/", user);
+  }
 }
 
 export default new App().app;
