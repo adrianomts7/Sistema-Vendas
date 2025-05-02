@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import e from "express";
+import validator from "validator";
 
 import User from "../models/userModel.js";
 
@@ -35,7 +35,8 @@ class UserController {
         return res.status(404).json("Usuario não encontrado");
       }
 
-      return res.json(user);
+      const { nome, email } = user;
+      return res.json({ msg: `Nome: ${nome}, email: ${email}` });
     } catch (e) {
       console.log(e);
       return res.status(500).json("Erro ao procurar usuario");
@@ -67,7 +68,7 @@ class UserController {
 
       await User.create(newUser);
 
-      return res.json(newUser);
+      return res.json({ msg: `${nome} foi criado com sucesso` });
     } catch (e) {
       console.log(e);
       return res.status(500).json("Erro ao criar usuario");
@@ -77,6 +78,7 @@ class UserController {
   async update(req, res) {
     try {
       const { id } = req.params;
+      const updatedUser = {};
 
       if (!id) {
         return res.status(401).json("Id invalido");
@@ -90,20 +92,45 @@ class UserController {
 
       const { nome, email, password } = req.body;
 
-      if (!nome || !email || !password) {
-        return res.status(401).json("nome, email ou senha é invalido");
+      if (!nome && !email && !password) {
+        return res
+          .status(401)
+          .json("Os dados enviado para atualizar são invalidos");
       }
 
-      const hashPassword = bcrypt.hashSync(password, 10);
+      let hashPassword = null;
 
-      const updatedUser = {
-        nome: nome,
-        email: email,
-        password: hashPassword,
-      };
+      if (nome) {
+        if (nome.length < 3) {
+          return res.status(401).json("Nome invalido");
+        } else {
+          updatedUser.nome = nome;
+        }
+      }
+
+      if (email) {
+        if (!validator.isEmail(email)) {
+          return res.status(401).json("Digite um email valido");
+        } else {
+          updatedUser.email = email;
+        }
+      }
+
+      if (password) {
+        if (password.length < 3) {
+          return res
+            .status(401)
+            .json("A senha deve ter no minimo 3 caracteres");
+        } else {
+          hashPassword = bcrypt.hashSync(password, 10);
+          updatedUser.password = hashPassword;
+        }
+      }
 
       await User.update(updatedUser, { where: { id } });
-      return res.json(updatedUser);
+      return res.json({
+        msg: `O usuario do id ${id} foi atualizado com sucesso`,
+      });
     } catch (e) {
       console.log(e);
       return res.status(500).json("Erro ao editar usuario");
@@ -124,8 +151,12 @@ class UserController {
         return res.status(400).json("Usuario não encontrado");
       }
 
+      const { nome } = user;
+
       await user.destroy();
-      return res.json("Usuario deletado com sucesso!");
+      return res.json({
+        msg: `${nome} foi deletado com sucesso, com o id ${id}`,
+      });
     } catch (e) {
       console.log(e);
       return res.status(500).json("Erro ao deletar usuario");
