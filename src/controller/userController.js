@@ -46,6 +46,7 @@ class UserController {
   async store(req, res) {
     try {
       const { nome, email, password, perfil } = req.body;
+      const perfis = ["gerente", "vendedor"];
 
       if (!nome && !email && !password && !perfil) {
         return res.status(401).json("Os complete os campos!");
@@ -67,6 +68,10 @@ class UserController {
 
       if (validator.isEmail(email)) {
         return res.status(400).json("E-mail invalido");
+      }
+
+      if (!perfis.includes(perfil)) {
+        return res.status(400).json("Perfil invalido");
       }
 
       const newPassword = bcrypt.hashSync(password, 10);
@@ -97,12 +102,12 @@ class UserController {
         return res.status(401).json("Usuario não encontrado");
       }
 
-      const { nome, email, password } = req.body;
+      const { nome, email, password, perfil } = req.body;
 
-      if (!nome && !email && !password) {
+      if (!nome && !email && !password && !perfil) {
         return res
           .status(401)
-          .json("Os dados enviado para atualizar são invalidos");
+          .json("Os dados enviado para atualizar s6ão invalidos");
       }
 
       let hashPassword = null;
@@ -131,6 +136,15 @@ class UserController {
         } else {
           hashPassword = bcrypt.hashSync(password, 10);
           updatedUser.password = hashPassword;
+        }
+      }
+
+      if (perfil) {
+        const perfis = ["gerente", "vendedor"];
+        if (perfis.includes(perfil)) {
+          return res.status(400).json("Perfil invalido");
+        } else {
+          updatedUser.perfil = perfil;
         }
       }
 
