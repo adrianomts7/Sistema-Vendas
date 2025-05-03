@@ -141,7 +141,7 @@ class UserController {
 
       if (perfil) {
         const perfis = ["gerente", "vendedor"];
-        if (perfis.includes(perfil)) {
+        if (!perfis.includes(perfil)) {
           return res.status(400).json("Perfil invalido");
         } else {
           updatedUser.perfil = perfil;
