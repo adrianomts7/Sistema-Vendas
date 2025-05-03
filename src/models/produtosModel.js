@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 
 import sequelize from "../database/database.js";
 
-const ProdutosModel = new sequelize.define("produtos", {
+const ProdutosModel = sequelize.define("produtos", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -19,7 +19,13 @@ const ProdutosModel = new sequelize.define("produtos", {
     },
   },
   categoria: {
-    type: DataTypes.ENUM("eletrônicos", "roupas", "alimentos"),
+    type: DataTypes.ENUM(
+      "eletrônicos",
+      "roupas",
+      "alimentos",
+      "limpeza",
+      "higiene",
+    ),
     allowNull: false,
   },
   preco: {
