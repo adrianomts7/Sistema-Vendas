@@ -20,9 +20,9 @@ class App {
   }
 
   routes() {
-    this.app.use("/", user);
     this.app.use("/token", token);
     this.app.use("/produto", produtos);
+    this.app.use("/", user);
   }
 }
 

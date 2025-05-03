@@ -21,11 +21,15 @@ export default async (req, res, next) => {
 
     const user = await User.findByPk(id);
 
+    if (!user) {
+      return res.status(400).json("Usuario não encontrado");
+    }
+
     req.user = user;
 
     return next();
   } catch (e) {
     console.log(e);
-    return res.status(500).json("Token invalido");
+    return res.status(401).json("Token invalido");
   }
 };

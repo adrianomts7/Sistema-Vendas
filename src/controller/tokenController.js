@@ -15,6 +15,7 @@ class TokenController {
       const user = await User.findOne({ where: { email } });
 
       if (!user) {
+        console.log(user);
         return res.status(400).json("Usuario não encontrado");
       }
 

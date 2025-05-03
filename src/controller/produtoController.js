@@ -3,15 +3,31 @@ import Produto from "../models/produtosModel.js";
 class ProdutoController {
   async index(req, res) {
     try {
-      const productos = await Produto.findAll();
+      const categorias = [
+        "eletrônicos",
+        "roupas",
+        "alimentos",
+        "limpeza",
+        "higiene",
+      ];
+
+      const { categoria } = req.body;
+
+      if (!categoria) {
+        return res.status(400).json("Categoria invalida");
+      }
+
+      if (!categorias.includes(categoria)) {
+        return res.status(400).json("Categoria invalida");
+      }
+
+      const productos = await Produto.findAll({ where: { categoria } });
 
       if (productos.length === 0) {
         return res.status(401).json("Não tem nenhum produto cadastrado");
       }
 
-      const { nome, id } = productos;
-
-      return res.json(`${id} do ${nome}`);
+      return res.json(productos);
     } catch (e) {
       console.log(e);
       return res
@@ -24,7 +40,7 @@ class ProdutoController {
     try {
       const { id } = req.params;
 
-      if (!id || id === null) {
+      if (!id) {
         return res.status(401).json("Digite o id do produto válido");
       }
 
