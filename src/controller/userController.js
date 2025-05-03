@@ -57,14 +57,21 @@ class UserController {
         return res.status(400).json("Usuario já existe");
       }
 
+      if (typeof nome !== "string" || nome.trim().length < 3) {
+        return res.status(400).json("Nome invalido");
+      }
+
+      if (typeof password !== "string" || password.trim().length < 7) {
+        return res.status(400).json("A senha deve ter no minimo 7 caracteres");
+      }
+
+      if (validator.isEmail(email)) {
+        return res.status(400).json("E-mail invalido");
+      }
+
       const newPassword = bcrypt.hashSync(password, 10);
 
-      const newUser = {
-        nome: nome,
-        email: email,
-        password: newPassword,
-        perfil: perfil,
-      };
+      const newUser = { nome, email, newPassword, perfil };
 
       await User.create(newUser);
 
@@ -101,8 +108,8 @@ class UserController {
       let hashPassword = null;
 
       if (nome) {
-        if (nome.length < 3) {
-          return res.status(401).json("Nome invalido");
+        if (typeof nome !== "string" || nome.trim().length < 3) {
+          return res.status(400).json("Nome invalido");
         } else {
           updatedUser.nome = nome;
         }
@@ -117,10 +124,10 @@ class UserController {
       }
 
       if (password) {
-        if (password.length < 3) {
+        if (typeof password !== "string" || password.trim().length < 7) {
           return res
-            .status(401)
-            .json("A senha deve ter no minimo 3 caracteres");
+            .status(400)
+            .json("A senha deve ter no minimo 7 caracteres");
         } else {
           hashPassword = bcrypt.hashSync(password, 10);
           updatedUser.password = hashPassword;

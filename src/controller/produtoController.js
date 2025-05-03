@@ -106,13 +106,37 @@ class ProdutoController {
         return res.status(400).json("Produto não encontrado");
       }
 
-      const { nome, quantidade, preco } = productoExist;
+      const { nome, categoria, quantidade, preco } = req.body;
       const productUpdated = {};
 
-      if (!quantidade && !preco) {
+      if (!nome && !categoria && !quantidade && !preco) {
         return res
           .status(400)
           .json("Digite dados válidos para poder editar o produto");
+      }
+
+      if (nome) {
+        if (typeof nome !== "string" || nome.trim().length < 2) {
+          return res.status(400).json("Digite um nome válido");
+        } else {
+          productUpdated.nome = nome;
+        }
+      }
+
+      if (categoria) {
+        const categorias = [
+          "eletrônicos",
+          "roupas",
+          "alimentos",
+          "limpeza",
+          "higiene",
+        ];
+
+        if (!categorias.includes(categoria)) {
+          return res.status(400).json("Categoria invalida");
+        } else {
+          productUpdated.categoria = categoria;
+        }
       }
 
       if (quantidade) {
