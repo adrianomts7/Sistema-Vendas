@@ -54,16 +54,6 @@ const VendasModel = sequelize.define("vendas", {
     type: DataTypes.DECIMAL,
     allowNull: true,
   },
-  valorFinal: {
-    type: DataTypes.DECIMAL,
-    allowNull: false,
-    validate: {
-      min: {
-        args: 0,
-        msg: "Valor final não pode ser zero",
-      },
-    },
-  },
 });
 
 // Cada venda se refere a um produto e a um (Vendedor /  Gerente)
