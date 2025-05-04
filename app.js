@@ -6,6 +6,7 @@ dotenv.config();
 import produtos from "./src/routes/produto.js";
 import token from "./src/routes/token.js";
 import user from "./src/routes/user.js";
+import vendas from "./src/routes/vendas.js";
 
 class App {
   constructor() {
@@ -20,6 +21,7 @@ class App {
   }
 
   routes() {
+    this.app.use("/vendas", vendas);
     this.app.use("/token", token);
     this.app.use("/produto", produtos);
     this.app.use("/", user);
