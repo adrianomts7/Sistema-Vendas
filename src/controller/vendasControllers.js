@@ -1,6 +1,6 @@
-import Produtos from "../models/produtosModel";
-import User from "../models/userModel";
-import Vendas from "../models/vendasModel";
+import Produtos from "../models/produtosModel.js";
+import User from "../models/userModel.js";
+import Vendas from "../models/vendasModel.js";
 
 class VendasController {
   async index(req, res) {
@@ -14,6 +14,7 @@ class VendasController {
           {
             model: User,
             as: "vendedor",
+            attributes: ["id", "nome", "email"],
           },
         ],
       });
@@ -43,11 +44,12 @@ class VendasController {
         include: [
           {
             model: Produtos,
-            as: "produtos",
+            as: "produto",
           },
           {
             model: User,
             as: "vendedor",
+            attributes: ["id", "nome", "email"],
           },
         ],
       });
@@ -70,7 +72,7 @@ class VendasController {
 
       const { produtoId, quantidade, desconto } = req.body;
 
-      if (!produtoId || !quantidade || !desconto) {
+      if (!produtoId || !quantidade) {
         return res.status(401).json("Nenhum campo pode ficar vazio");
       }
 

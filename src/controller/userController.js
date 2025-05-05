@@ -6,7 +6,9 @@ import User from "../models/userModel.js";
 class UserController {
   async index(req, res) {
     try {
-      const users = await User.findAll({ where: { perfil: "vendedor" } });
+      const users = await User.findAll({
+        attributes: ["id", "nome", "email", "perfil"],
+      });
 
       if (users.length === 0) {
         return res.status(400).json("Não tem nenhum vendedor cadastrado");
@@ -45,8 +47,10 @@ class UserController {
 
   async store(req, res) {
     try {
-      const { nome, email, password, perfil } = req.body;
+      const { nome, email, perfil } = req.body;
       const perfis = ["gerente", "vendedor"];
+
+      let { password } = req.body;
 
       if (!nome && !email && !password && !perfil) {
         return res.status(401).json("Os complete os campos!");
@@ -66,7 +70,7 @@ class UserController {
         return res.status(400).json("A senha deve ter no minimo 7 caracteres");
       }
 
-      if (validator.isEmail(email)) {
+      if (!validator.isEmail(email)) {
         return res.status(400).json("E-mail invalido");
       }
 
@@ -74,9 +78,9 @@ class UserController {
         return res.status(400).json("Perfil invalido");
       }
 
-      const newPassword = bcrypt.hashSync(password, 10);
+      password = bcrypt.hashSync(password, 10);
 
-      const newUser = { nome, email, newPassword, perfil };
+      const newUser = { nome, email, password, perfil };
 
       await User.create(newUser);
 
